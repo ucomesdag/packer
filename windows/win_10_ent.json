@@ -1,0 +1,63 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "vm_name": "win_10_ent",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "headless": "{{user `headless`}}",
+      "guest_os_type": "Windows10_64",
+      "disk_size": "{{user `disk_size`}}",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--memory", "{{user `memory_size`}}"],
+        ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"]
+      ],
+      "communicator": "winrm",
+      "winrm_username": "vagrant",
+      "winrm_password": "vagrant",
+      "winrm_timeout": "6h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "boot_wait": "2m",
+      "floppy_files": [
+        "{{user `autounattend`}}",
+        "./scripts/set_execution_policy.ps1",
+        "./scripts/fix_network.ps1",
+        "./scripts/enable_winrm.ps1",
+        "./scripts/enable_updates.ps1",
+        "./scripts/do_updates.ps1"
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "scripts": [
+        "./scripts/win_settings.ps1",
+        "./scripts/enable_rdp.ps1",
+        "./scripts/vm_guest_tools.ps1",
+        "./scripts/vagrant.ps1"
+      ],
+      "elevated_user": "vagrant",
+      "elevated_password": "vagrant"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "win_10_ent_{{.Provider}}.box",
+      "vagrantfile_template": "vagrantfile-win_10_ent.template"
+    }
+  ],
+  "variables": {
+    "iso_url": "./iso/10/SW_DVD5_WIN_ENT_10_64BIT_English_MLF_X20-26061.ISO",
+    "iso_checksum_type": "sha1",
+    "iso_checksum": "30ad1cdf5d0670f12788005131e24862f6ab8aab",
+    "autounattend": "./answer_files/10/Autounattend.xml",
+    "headless": "true",
+    "cpus": "2",
+    "memory_size": "2048",
+    "disk_size": "61440"
+  }
+}

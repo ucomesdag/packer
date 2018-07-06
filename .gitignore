@@ -1,0 +1,6 @@
+*.iso
+*.box
+.vagrant
+Vagrantfile
+setenv.sh
+license.txt
