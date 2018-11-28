@@ -60,6 +60,6 @@
     "headless": "true",
     "cpus": "2",
     "memory_size": "1024",
-    "disk_size": "8192"
+    "disk_size": "40960"
   }
 }
