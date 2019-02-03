@@ -2,13 +2,13 @@
   "builders": [
     {
       "type": "virtualbox-iso",
-      "vm_name": "win_10_ent",
+      "vm_name": "win_7_ult",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "headless": "{{user `headless`}}",
-      "guest_os_type": "Windows10_64",
-      "disk_size": "{{user `disk_size`}}",      
+      "guest_os_type": "Windows7_64",
+      "disk_size": "{{user `disk_size`}}",
       "hard_drive_interface": "{{user `hard_drive_interface`}}",
       "iso_interface": "{{user `iso_interface`}}",
       "vboxmanage": [
@@ -16,8 +16,8 @@
         ["modifyvm", "{{.Name}}", "--cpus", "{{user `cpus`}}"]
       ],
       "communicator": "winrm",
-      "winrm_username": "vagrant",
-      "winrm_password": "vagrant",
+      "winrm_username": "{{user `user`}}",
+      "winrm_password": "{{user `password`}}",
       "winrm_timeout": "6h",
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
       "boot_wait": "2m",
@@ -32,6 +32,33 @@
   "provisioners": [
     {
       "type": "powershell",
+      "script": "./scripts/win7_sp1.ps1",
+      "elevated_user": "{{user `user`}}",
+      "elevated_password": "{{user `password`}}"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "script": "./scripts/upgrade_dotnet4.0.ps1",
+      "elevated_user": "{{user `user`}}",
+      "elevated_password": "{{user `password`}}"
+    },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "script": "./scripts/upgrade_powershell3.0.ps1",
+      "elevated_user": "{{user `user`}}",
+      "elevated_password": "{{user `password`}}"
+    },   
+    {
+      "type": "windows-restart"
+    },   
+    {
+      "type": "powershell",
       "scripts": [
         "./scripts/enable_remoting_for_ansible.ps1",
         "./scripts/enable_updates.ps1",
@@ -39,31 +66,33 @@
         "./scripts/vagrant.ps1",
         "./scripts/vm_guest_tools.ps1",
         "./scripts/win_settings.ps1",
-        "./scripts/remove_onedrive.ps1",
         "./scripts/cleanup.ps1"
       ],
-      "elevated_user": "vagrant",
-      "elevated_password": "vagrant"
+      "elevated_user": "{{user `user`}}",
+      "elevated_password": "{{user `password`}}",
+      "pause_before": "30s"
     }
   ],
   "post-processors": [
     {
       "type": "vagrant",
       "keep_input_artifact": false,
-      "output": "win_10_ent_{{.Provider}}.box",
-      "vagrantfile_template": "./templates/vagrantfile-win_10_ent.template"
+      "output": "win_7_ult_{{.Provider}}.box",
+      "vagrantfile_template": "./templates/vagrantfile-win_7_ult.template"
     }
   ],
   "variables": {
-    "iso_url": "./iso/10/SW_DVD5_WIN_ENT_10_64BIT_English_MLF_X20-26061.ISO",
+    "iso_url": "./iso/7/SW_DVD5_Win_Ult_7_64BIT_English_X15-65922.ISO",
     "iso_checksum_type": "sha1",
-    "iso_checksum": "30ad1cdf5d0670f12788005131e24862f6ab8aab",
-    "autounattend": "./answer_files/10/Autounattend.xml",
+    "iso_checksum": "326327cc2ff9f05379f5058c41be6bc5e004baa7",
+    "autounattend": "./answer_files/7/Autounattend.xml",
     "headless": "true",
     "cpus": "2",
     "memory_size": "2048",
     "disk_size": "61440",
     "hard_drive_interface": "sata",
-    "iso_interface": "sata"
+    "iso_interface": "sata",
+    "user": "vagrant",
+    "password": "vagrant"
   }
 }

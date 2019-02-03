@@ -1,3 +1,17 @@
+#Fix: The OS handle's position is not what FileStream expected
+$bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
+$objectRef = $host.GetType().GetField("externalHostRef", $bindingFlags).GetValue($host)
+$bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetProperty"
+$consoleHost = $objectRef.GetType().GetProperty("Value", $bindingFlags).GetValue($objectRef, @())
+[void] $consoleHost.GetType().GetProperty("IsStandardOutputRedirected", $bindingFlags).GetValue($consoleHost, @())
+$bindingFlags = [Reflection.BindingFlags] "Instance,NonPublic,GetField"
+$field = $consoleHost.GetType().GetField("standardOutputWriter", $bindingFlags)
+$field.SetValue($consoleHost, [Console]::Out)
+$field2 = $consoleHost.GetType().GetField("standardErrorWriter", $bindingFlags)
+$field2.SetValue($consoleHost, [Console]::Out)
+#EndFix
+
+
 # Disable UAC
 # New-ItemProperty -Path "HKLM:Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -PropertyType DWord -Value 0 -Force | Out-Null
 New-ItemProperty -Path "HKLM:Software\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -PropertyType DWord -Value 0 -Force | Out-Null
@@ -19,7 +33,7 @@ Disable-ComputerRestore C:
 Write-Host "Disabled the system restore feature." -ForegroundColor Green
 
 # Disable hibernation
-powercfg -h off
+&powercfg -h off 2>&1 | out-null
 Write-Host "Disabled hibernation." -ForegroundColor Green
 
 # Disable Complex Passwords
@@ -37,11 +51,11 @@ $userDirectory = [ADSI]"WinNT://$env:ComputerName"
 $user = $userDirectory.PSBase.Children | Where-Object { $_.PSBase.SchemaClassName -eq "User" -and $_.Name -eq "vagrant" }
 if ($user)
 {
-    Write-Host "vagrant user already exists, will just update it"
+    Write-Host "..vagrant user already exists, will just update it"
 }
 else
 {
-    Write-Host "vagrant user does not exist, creating"
+    Write-Host "..vagrant user does not exist, creating it"
     $user = $userDirectory.Create("User", "vagrant")
 }
 $user.SetPassword("vagrant")
@@ -56,4 +70,4 @@ $admin = $userDirectory.PSBase.Children.Find("Administrators")
 $members = net localgroup administrators | where {$_ -AND $_ -notmatch "command completed successfully"} | select -skip 4
 $isAdmin = $members | Where-Object { $_ -eq "vagrant" }
 if (!$isAdmin) { $admin.Add("WinNT://$env:ComputerName/vagrant") }
-Write-Host "User: 'vagrant' has been created as a local administrator." -ForegroundColor Green
+Write-Host "User 'vagrant' has been created as a local administrator." -ForegroundColor Green

@@ -5,5 +5,5 @@
 Write-Host "Enabled Remote Desktop." -ForegroundColor Green
 
 # Open Windows Firewall for Remote Desktop
-netsh advfirewall firewall set rule  group='remote desktop' new enable=Yes | out-null
+&netsh advfirewall firewall set rule  group='remote desktop' new enable=Yes | out-null
 Write-Host "Remote Desktop allowed in the Windows Firewall." -ForegroundColor Green
