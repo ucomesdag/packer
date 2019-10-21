@@ -1,5 +1,7 @@
 *.iso
 *.box
+
 Vagrantfile
 setenv.sh
 license.txt
+packer_cache
