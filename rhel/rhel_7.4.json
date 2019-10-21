@@ -2,7 +2,7 @@
   "builders": [
     {
       "type": "virtualbox-iso",
-      "vm_name": "rhel_7.4",
+      "vm_name": "rhel_{{user `version`}}",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
@@ -48,12 +48,13 @@
     {
       "type": "vagrant",
       "keep_input_artifact": false,
-      "output": "rhel_7.4_{{.Provider}}.box",
-      "vagrantfile_template": "vagrantfile-rhel_7.4.template"
+      "output": "rhel_{{user `version`}}_{{.Provider}}.box",
+      "vagrantfile_template": "vagrantfile-rhel_{{user `version`}}.template"
     }
   ],
   "variables": {
     "iso_url": "./iso/7.4/rhel-server-7.4-x86_64-dvd.iso",
+    "version": "7.4",
     "iso_checksum_type": "sha256",
     "iso_checksum": "431a58c8c0351803a608ffa56948c5a7861876f78ccbe784724dd8c987ff7000",
     "headless": "true",

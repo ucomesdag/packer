@@ -53,10 +53,10 @@
     }
   ],
   "variables": {
-    "iso_url": "./iso/7.5/rhel-server-7.5-x86_64-dvd.iso",
-    "version": "7.5",
+    "iso_url": "./iso/7.6/rhel-server-7.6-x86_64-dvd.iso",
+    "version": "7.6",
     "iso_checksum_type": "sha256",
-    "iso_checksum": "d0dd6ae5e001fb050dafefdfd871e7e648b147fb2d35f0e106e0b34a0163e8f5",
+    "iso_checksum": "60a0be5aeed1f08f2bb7599a578c89ec134b4016cd62a8604b29f15d543a469c",
     "headless": "true",
     "cpus": "2",
     "memory_size": "1024",
